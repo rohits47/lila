@@ -10,7 +10,7 @@ import * as keyboard from '../keyboard';
 import crazyView from '../crazy/crazyView';
 import { render as keyboardMove } from '../keyboardMove';
 import RoundController from '../ctrl';
-import { MaterialDiff, MaterialDiffSide } from '../interfaces';
+import { MaterialDiff, MaterialDiffSide, CheckCount } from '../interfaces';
 
 function renderMaterial(material: MaterialDiffSide, score: number, checks?: number) {
   const children: VNode[] = [];
@@ -52,7 +52,12 @@ export function main(ctrl: RoundController): VNode {
     material = util.getMaterialDiff(pieces);
     score = util.getScore(pieces) * (bottomColor === 'white' ? 1 : -1);
   } else material = emptyMaterialDiff;
-  return ctrl.blind ? ctrl.blind.render(ctrl) : h('div.round.cg-512', [
+
+  const checks: CheckCount = (d.player.checks || d.opponent.checks) ?
+    util.countChecks(ctrl.data.steps, ctrl.ply) :
+    util.noChecks;
+
+  return ctrl.nvui ? ctrl.nvui.render(ctrl) : h('div.round.cg-512', [
     h('div.lichess_game.gotomove.variant_' + d.game.variant.key + (ctrl.data.pref.blindfold ? '.blindfold' : ''), {
       hook: {
         insert: () => window.lichess.pubsub.emit('content_loaded')()
@@ -65,9 +70,9 @@ export function main(ctrl: RoundController): VNode {
         promotion.view(ctrl)
       ]),
       h('div.lichess_ground', [
-        crazyView(ctrl, topColor, 'top') || renderMaterial(material[topColor], -score, d.player.checks),
+        crazyView(ctrl, topColor, 'top') || renderMaterial(material[topColor], -score, checks[topColor]),
         renderTable(ctrl),
-        crazyView(ctrl, bottomColor, 'bottom') || renderMaterial(material[bottomColor], score, d.opponent.checks)
+        crazyView(ctrl, bottomColor, 'bottom') || renderMaterial(material[bottomColor], score, checks[bottomColor])
       ])
     ]),
     h('div.underboard', [

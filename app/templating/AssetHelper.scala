@@ -58,6 +58,10 @@ trait AssetHelper { self: I18nHelper with SecurityHelper =>
   def roundNvuiTag(implicit ctx: Context) = ctx.blind option
     jsAt(s"compiled/lichess.round.nvui.min.js", async = true)
 
+  def analyseTag = jsAt(s"compiled/lichess.analyse${isProd ?? (".min")}.js")
+  def analyseNvuiTag(implicit ctx: Context) = ctx.blind option
+    jsAt(s"compiled/lichess.analyse.nvui.min.js")
+
   val highchartsLatestTag = Html {
     s"""<script src="${staticUrl("vendor/highcharts-4.2.5/highcharts.js")}"></script>"""
   }
@@ -105,7 +109,7 @@ trait AssetHelper { self: I18nHelper with SecurityHelper =>
       frameSrc = List("'self'", assets, "https://www.youtube.com"),
       workerSrc = List("'self'", assets),
       imgSrc = List("data:", "*"),
-      scriptSrc = List("'self'", "'unsafe-eval'", assets),
+      scriptSrc = List("'self'", "'unsafe-eval'", assets), // unsafe-eval for WebAssembly (wasmx)
       baseUri = List("'none'")
     )
   }

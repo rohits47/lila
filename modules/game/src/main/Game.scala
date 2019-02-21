@@ -463,7 +463,7 @@ case class Game(
       case Rapid => 30
       case _ => 35
     }
-    if (variant.chess960) (base * 2) atMost 90
+    if (variant.chess960) base * 5 / 4
     else base
   }
 
@@ -592,6 +592,14 @@ object Game {
     chess.variant.Horde,
     chess.variant.RacingKings,
     chess.variant.Antichess
+  )
+
+  val blindModeVariants: Set[Variant] = Set(
+    chess.variant.Standard,
+    chess.variant.Chess960,
+    chess.variant.KingOfTheHill,
+    chess.variant.ThreeCheck,
+    chess.variant.FromPosition
   )
 
   val hordeWhitePawnsSince = new DateTime(2015, 4, 11, 10, 0)
